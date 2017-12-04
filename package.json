@@ -1,0 +1,28 @@
+{
+  "name": "ppcrawler",
+  "version": "1.0.0",
+  "description": "Crawler in nodejs with interpretation of result and data visualization.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wlpking/ppcrawler.git"
+  },
+  "keywords": [
+    "ppcrawler",
+    "framework"
+  ],
+  "author": "Linpeng Wu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wlpking/ppcrawler/issues"
+  },
+  "homepage": "https://github.com/wlpking/ppcrawler#readme",
+  "dependencies": {
+    "connect": "~3.6.5",
+    "serve-static": "~1.13.1"
+  }
+}
