@@ -10,5 +10,33 @@
     <h1>
         welcome to ppcrawler !
     </h1>
+    <form action="/sendmsg">
+        <input type="text" name="phone" id="phone">
+        <input type="submit" value="获取验证码">
+    </form>
+    <input type="button" value="更新二维码" onclick="getQ()">
+    <input id="getuser" type="button" value="获得登录人员" onclick="getUser()">
+    <img src="" alt="weixin">
+    <div id="users"></div>
+    <script src="http://cdn.static.runoob.com/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script>
+        function getQ(){
+            $.ajax({
+            url:'/weixin',
+            success:function(data){
+                $('img').attr('src',data);
+            }
+            });
+        };
+        function getUser(){
+            $.ajax({
+            url:'/loginUser',
+            success:function(data){
+                $("#users").append(data);
+            }
+            });
+        };
+        
+    </script>
 </body>
 </html>
