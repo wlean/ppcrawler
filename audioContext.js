@@ -7,10 +7,21 @@ function playSound(buffer, time,o,d) {
   var source = context.createBufferSource();
   source.buffer = buffer;
   source.connect(context.destination);
-  source.playbackRate.value = 1;
+  var source2 = context.createBufferSource();
+  source2.buffer = buffer;
+  source2.connect(context.destination);
+  source.playbackRate.value = 2;
   if (!source.start)
     source.start = source.noteOn;
+  console.log('xxxxxx',context.state,source.start);
   source.start(time,o,d);
+  source.onended = function(){
+    console.log('播放完了1');
+    source2.playbackRate.value = source.playbackRate.value+1;
+    if (!source2.start)
+      source2.start = source2.noteOn;
+    source2.start(time,o,d);
+  };
   console.log('context currentTime',context.currentTime);
   console.log(source.playbackRate);
 }
@@ -32,4 +43,10 @@ function loadDogSound(url,time,o,d) {
     }, onError);
   }
   request.send();
+}
+
+function pop(){
+  context.suspend().then(function() {
+    console.log('Resume context');
+  });;
 }

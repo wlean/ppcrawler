@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <input type="button" value="播放/暂停" onclick="pop()">
+    <input type="button" value="加速" onclick="changeSpeed(0.25)">
+    <input type="button" value="减速" onclick="changeSpeed(-0.25)">
+    <input type="button" value="重播" onclick="replay()">
+    <script src="audio.js"></script>
+    <script>
+        var audio = LAudio;
+        audio.init();
+        function changeSpeed(speed){
+            audio.changeSpeed(speed);
+        };
+        function pop(){
+            if(!audio.hasplay){
+                audio.play();
+                return ;
+            }
+            if(audio.audioContext.state === 'running') {
+                audio.audioContext.suspend().then(function() {
+                    console.log('suspend');
+                });
+            } else if(audio.audioContext.state === 'suspended') {
+                audio.audioContext.resume().then(function() {
+                    console.log('resume');
+                });  
+            }
+        };
+        function replay(){
+            audio.replay();
+        };
+        function addAudio(url) {
+            var request = new XMLHttpRequest();
+            request.open('GET', url, true);
+            request.responseType = 'arraybuffer';
+
+            // Decode asynchronously
+            request.onload = function() {
+                audio.audioContext.decodeAudioData(request.response, function(buffer) {
+                    dogBarkingBuffer = buffer;
+                    audio.addAudio(dogBarkingBuffer);
+                }, onError);
+            }
+            request.send();
+        };
+        function onError(){
+            console.log('错了');
+        };
+        addAudio('http://127.0.0.1:12345/2076742296068388549');
+        addAudio('http://127.0.0.1:12345/9516');
+        addAudio('http://127.0.0.1:12345/2076742296068388549');
+        addAudio('http://127.0.0.1:12345/9516');
+        console.log(audio);
+    </script>
+</body>
+</html>
