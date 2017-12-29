@@ -9,8 +9,12 @@ var laudio = {
   playing:-1,
   length:0,
   hasplay:false,
-  addAudio(buffer){
-    this.audioBuffer.push(buffer);
+  addAudio(buffer,index){
+    if(!index){
+      this.audioBuffer.push(buffer);
+    }else{
+      this.audioBuffer[index-1] = buffer;
+    }
   },
   getNextSource(){
     var source = this.audioCtx.createBufferSource();
@@ -32,14 +36,23 @@ var laudio = {
       }
     
     };
+    this.playingSource = source;
     return source;
+  },
+  /**
+   * 改变播放速度
+   * @param {number} speed 
+   */
+  changeSpeed(speed){
+    this.playingSource.playbackRate.value += speed;
+    console.log('改变播放速度',this.playingSource.playbackRate.value);
   },
   /**
    * 暂停播放
    */
   suspend(){
     console.log('暂停播放');
-    this.audioContext.suspend();
+    this.audioCtx.suspend();
   },
 
   /**
@@ -47,7 +60,7 @@ var laudio = {
    */
   resume(){
     console.log('resume');
-    this.audioContext.resume();
+    this.audioCtx.resume();
   },
 
   /**
@@ -55,7 +68,9 @@ var laudio = {
    */
   replay(){
     console.log('replay');
-    this.playSource = 0;
+    this.audioCtx.close();
+    this.audioCtx = new AudioContext();
+    this.playing = -1;
     this.play();
   },
 
@@ -65,6 +80,13 @@ var laudio = {
   play(){
     console.log('start play');
     this.hasplay = true;
-    this.audioSources[this.playSource].start(0);
+    if(this.getNextSource()){
+      this.getNextSource().start(0);
+    }else{
+      var that = this;
+      setTimeout(function(){
+        that.play();
+      },100);
+    }
   }
 };
