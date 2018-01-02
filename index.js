@@ -15,7 +15,7 @@ const server = connect();
 let options = {
   dotfiles: 'ignore',
   etag: false,
-  extensions: ['htm', 'html','ogg','mp3','wav'],
+  extensions: ['htm', 'html','ogg','mp3','wav','js'],
   index: ['index.html'],
   maxAge: '1d',
   redirect: false,

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SocketIO test</title>
+</head>
+<body>
+    <div class="record">
+        <ul id="records"></ul>
+    </div>
+    <input type="text" name="msg" id="msg">
+    <input type="submit" value="send" onclick="send()">
+    <script src="socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+        var socket = io();
+        function send(){
+            socket.emit('chat message', $('#msg').val());
+            $('#msg').val('');
+            return false;
+        };
+        
+        socket.on('chat message',function(msg){
+            $('#records').append($('<li>').text(msg.msg));
+            console.log(msg);
+        });
+    </script>
+</body>
+</html>
