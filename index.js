@@ -4,12 +4,7 @@ const http = require('http');
 const config = require('./config.json');
 const fs = require('fs');
 const url = require('url');
-const wc = require('wechaty');
 const qs = require('querystring'); 
-const Wechaty = wc.Wechaty;
-const Contact = wc.Contact;
-
-const bot = Wechaty.instance();
 const server = connect();
 
 let options = {
@@ -33,17 +28,6 @@ server.use('/sendmsg',function(req,res){
   console.log(url.parse(req.url,true).query);
   res.end();
 });
-
-let qUrl = '';
-let username = '';
-bot.on('scan',(url,code)=>{
-  console.log(`二维码地址为 ${url}`)
-  qUrl = url;
-});
-bot.on('login',user=>{
-  username = user.name();
-});
-// bot.start();
 
 server.use('/weixin',function(req,res){
   console.log('获得登录二维码');
