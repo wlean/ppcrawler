@@ -10,6 +10,7 @@
     <h1>
         welcome to ppcrawler !
     </h1>
+    <a href="socket/public/index.html">socket</a>
     <form action="/sendmsg">
         <input type="text" name="phone" id="phone">
         <input type="submit" value="获取验证码">
@@ -36,7 +37,16 @@
             }
             });
         };
-        
+        $.ajax({
+            url:'/dirList',
+            success:function(data){
+                let a = [];
+                a = data.split(',');
+                $("#users").append(a.length);
+                for(let x in a)
+                    $("#users").append('<a href='+a[x]+'>'+a[x]+'</a>'+'<br>');
+            } 
+        });
     </script>
 </body>
 </html>

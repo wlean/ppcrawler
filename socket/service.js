@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 var io = require('socket.io')(http);
+const fs = require('fs');
 
 
 app.use(express.static(__dirname + '/public'));
@@ -16,7 +17,15 @@ io.on('connection', function(socket){
     });
     socket.on('chat message', function(msg){
         console.log('message: ' + msg);
+        if (io.sockets.connected[socket.id]) {
+          io.sockets.connected[socket.id].emit('chat message',{msg:'me'});
+        }
+        socket.emit('chat message',{msg:'me2'})
         io.emit('chat message', {msg:msg});
+        if(msg=='mp3'){
+
+          io.emit('chat message', {audio:fs.readFileSync('1.wav')});
+        }
     });
   });
       
