@@ -7,15 +7,20 @@
     <title>SocketIO test</title>
 </head>
 <body>
+    <input type="text" name="msg" id="msg">
+    <input type="submit" value="send" onclick="send()">
+    <input type="submit" value="stop" onclick="change()">
+    <input type="submit" value="startR" onclick="startR()">
+    <input type="submit" value="stopR" onclick="stopR()">
+    <audio id="audio" controls></audio>
     <div class="record">
         <ul id="records"></ul>
     </div>
-    <input type="text" name="msg" id="msg">
-    <input type="submit" value="send" onclick="send()">
-    <audio id="audio" controls></audio>
     <script src="socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script src="laudio.js"></script>
+    <script src="recorderWorker.js"></script>
+    <script src="recorder.js"></script>
     <script>
         var socket = io(window.location.hostname+':3000');
         function send(){
@@ -36,42 +41,81 @@
             }
             console.log(msg);
         });
-        navigator.getUserMedia = navigator.getUserMedia||navigator.webkitGetUserMedia;
+        window.URL = window.URL;
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
         if (navigator.getUserMedia) {
-            navigator.getUserMedia(
-                {
-                    audio:true
-                },
-                function(localMediaStream){
-                    var audioCtx = new AudioContext();
-                    var audio = document.querySelector('audio');
-                    audio.src = window.URL.createObjectURL(localMediaStream);
-                    
-                    audio.play();
+            navigator.getUserMedia({audio:true}, function(localMediaStream){
+                var context = new AudioContext();
+                var mediaStreamSource = context.createMediaStreamSource(localMediaStream);
+                window.MediaStreamSource = mediaStreamSource;
+            }, function(e){
 
-                    var source = audioCtx.createMediaStreamSource(localMediaStream);
-                    var scriptNode = audioCtx.createScriptProcessor(16384, 1, 1);
- 
-                    scriptNode.onaudioprocess = function(audioProcessingEvent) {
-                        // The input buffer is the song we loaded earlier
-                        var inputBuffer = audioProcessingEvent.inputBuffer;
-                        var outputBuffer = audioProcessingEvent.outputBuffer;
-                        // Loop through the output channels (in this case there is only one)
-                        for (var channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
-                            var inputData = inputBuffer.getChannelData(channel);
-                            socket.emit('addAudio', {stream:inputData.buffer,id:'a'});
-                        }
-                    }
-                    
-                    source.connect(scriptNode);
-                    scriptNode.connect(audioCtx.destination);
-                }, function(error){
-                    alert(error.name+error.message);
-                }
-            );
+                console.log(e);
+            });
         }else {
             alert('你的浏览器不支持录音');
         }
+
+        //2.开始录音
+        function startR(){
+        var rec = new Recorder(window.MediaStreamSource);
+        window.rec=rec;
+        }
+
+
+
+        //3.停止录音
+        function stopR(){
+        window.rec.stop();
+        rec.exportWAV(function(blob) {
+
+        //导出录音过程产生的blob数据，传给后台实现音频的保存
+
+        });
+        console.log(blob);}
+        // var isstop = false;
+        // function change(){
+        //     isstop = !isstop;
+        // };
+        // navigator.getUserMedia = navigator.getUserMedia||navigator.webkitGetUserMedia||navigator.mozGetUserMedia;
+        // if (navigator.getUserMedia) {
+        //     navigator.getUserMedia(
+        //         {
+        //             audio:true
+        //         },
+        //         function(localMediaStream){
+                    
+        //             var audioCtx = new AudioContext();
+        //             var audio = document.querySelector('audio');
+        //             audio.src = window.URL.createObjectURL(localMediaStream);
+                    
+        //             var source = audioCtx.createMediaStreamSource(localMediaStream);
+        //             var scriptNode = audioCtx.createScriptProcessor(16384, 1, 1);
+ 
+        //             scriptNode.onaudioprocess = function(audioProcessingEvent) {
+        //                 if(isstop){
+        //                     return;
+        //                 }
+        //                 change();
+        //                 // The input buffer is the song we loaded earlier
+        //                 var inputBuffer = audioProcessingEvent.inputBuffer;
+        //                 // Loop through the output channels (in this case there is only one)
+        //                 for (var channel = 0; channel < inputBuffer.numberOfChannels; channel++) {
+        //                     var inputData = inputBuffer.getChannelData(channel);
+        //                     $('#records').append($('<li>').text('length'+inputData.length+'byteLength'+inputData.byteLength));
+        //                     socket.emit('addAudio', {stream:inputData.buffer,id:'a',data:inputData});
+        //                 }
+        //             }
+                    
+        //             source.connect(scriptNode);
+        //             scriptNode.connect(audioCtx.destination);
+        //         }, function(error){
+        //             alert(error.name+error.message);
+        //         }
+        //     );
+        // }else {
+        //     alert('你的浏览器不支持录音');
+        // }
     </script>
 </body>
 </html>

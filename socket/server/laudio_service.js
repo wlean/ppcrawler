@@ -14,7 +14,7 @@ const options2 = {
 };
 const https = require('https').createServer(options2,server);
 const io = socketio(https);
-
+const { readBuffer, Wav } = require('./audioUtil');
 
 class laudio{};
 
@@ -35,9 +35,10 @@ io.on('connection', function(socket){
   });
   socket.on('addAudio', function(data){
     laudio.emitEvent('newAudio',data.id);
-    socket.emit('succ',{msg:'succ',id:data.id});
     if(data.stream){
-      io.emit('sendAudio',data.stream);
+      let a = new Wav(data.stream,true);
+      console.log(a.buffer);
+      io.emit('sendAudio',a.buffer);
     }
   });
 });

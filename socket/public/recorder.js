@@ -1,13 +1,12 @@
 (function(window){
- 
-  var WORKER_PATH = 'recorderWorker.js'; //自己设置recorderWorker.js的路径
+
  
   var Recorder = function(source, cfg){
+    var worker = new RecorderWorker();
     var config = cfg || {};
     var bufferLen = config.bufferLen || 4096;   
     this.context = source.context;
     this.node = this.context.createScriptProcessor(bufferLen, 1, 1);
-    var worker = new Worker(config.workerPath || WORKER_PATH);
     worker.postMessage({
       command: 'init',
       config: {
@@ -82,7 +81,7 @@
     click.initEvent("click", true, true);
     link.dispatchEvent(click);
   }
- 
+
   window.Recorder = Recorder;
  
 })(window);

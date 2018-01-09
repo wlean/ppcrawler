@@ -22,19 +22,24 @@
 
         var la = laudio;
         socket.on('sendAudio',function(msg){
-            var frameCount = msg.byteLength;
+            // var frameCount = msg.byteLength;
 
-            var myArrayBuffer = la.audioCtx.createBuffer(1, frameCount, la.audioCtx.sampleRate);
-            for (var channel = 0; channel < 1; channel++) {
-                // 这允许我们读取实际音频片段(AudioBuffer)中包含的数据
-                var nowBuffering = myArrayBuffer.getChannelData(channel);
-                for (var i = 0; i < frameCount; i++) {
-                    // Math.random() is in [0; 1.0]
-                    // audio needs to be in [-1.0; 1.0]
-                    nowBuffering[i] = msg[i];
-                }
-            }
-            la.addAudio(myArrayBuffer);
+            // var myArrayBuffer = la.audioCtx.createBuffer(1, frameCount, la.audioCtx.sampleRate);
+            // for (var channel = 0; channel < 1; channel++) {
+            //     // 这允许我们读取实际音频片段(AudioBuffer)中包含的数据
+            //     var nowBuffering = myArrayBuffer.getChannelData(channel);
+            //     for (var i = 0; i < frameCount; i++) {
+            //         // Math.random() is in [0; 1.0]
+            //         // audio needs to be in [-1.0; 1.0]
+            //         nowBuffering[i] = msg[i];
+            //     }
+            // }
+            // la.addAudio(myArrayBuffer);
+            la.audioCtx.decodeAudioData(msg, function(buffer) {
+                dogBarkingBuffer = buffer;
+                la.addAudio(dogBarkingBuffer);
+                console.log(la.length);
+            }, ()=>console.log('error error'));
         });
         
     </script>

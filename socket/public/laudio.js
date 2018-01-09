@@ -15,6 +15,7 @@ var laudio = {
     }else{
       this.audioBuffer[index-1] = buffer;
     }
+    this.length+=1;
   },
   getNextSource(){
     var source = this.audioCtx.createBufferSource();
@@ -26,6 +27,7 @@ var laudio = {
       source.start = source.noteOn;
     var that = this;
     source.onended = function(){
+      console.log('end one');
       that.playing++;
       var next = that.getNextSource();
       if(next){
