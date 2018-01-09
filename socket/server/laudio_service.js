@@ -36,7 +36,7 @@ io.on('connection', function(socket){
   socket.on('addAudio', function(data){
     laudio.emitEvent('newAudio',data.id);
     if(data.stream){
-      let a = new Wav(data.stream,true);
+      let a = new Wav(data.stream);
       console.log(a.buffer);
       io.emit('sendAudio',a.buffer);
     }

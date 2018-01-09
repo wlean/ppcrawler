@@ -23,6 +23,7 @@
   "homepage": "https://github.com/wlpking/ppcrawler#readme",
   "dependencies": {
     "connect": "~3.6.5",
-    "serve-static": "~1.13.1"
+    "serve-static": "~1.13.1",
+    "socket.io": "^2.0.4"
   }
 }

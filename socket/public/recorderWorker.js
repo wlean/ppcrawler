@@ -1,30 +1,31 @@
 (function(window){
   var RecorderWorker = function(){
-    alert('worker');
     var recLength = 0,
       recBuffersL = [],
       recBuffersR = [],
       sampleRate;
-
-      this.onmessage = function(e){
-        switch(e.data.command){
-          case 'init':
-            init(e.data.config);
-            break;
-          case 'record':
-            record(e.data.buffer);
-            break;
-          case 'exportWAV':
-            exportWAV(e.data.type);
-            break;
-          case 'getBuffer':
-            getBuffer();
-            break;
-          case 'clear':
-            clear();
-            break;
-        }
-      };
+    this.postMessage = function(e){
+      this.onmessage(e);
+    }
+    this.onmessage = function(e){
+      switch(e.command){
+        case 'init':
+          init(e.config);
+          break;
+        case 'record':
+          record(e.buffer);
+          break;
+        case 'exportWAV':
+          exportWAV(e.type,e.cb);
+          break;
+        case 'getBuffer':
+          getBuffer();
+          break;
+        case 'clear':
+          clear();
+          break;
+      }
+    };
 
       function init(config){
         sampleRate = config.sampleRate;
@@ -36,13 +37,13 @@
         recLength += inputBuffer[0].length;
       }
       
-      function exportWAV(type){
+      function exportWAV(type,cb){
         var bufferL = mergeBuffers(recBuffersL, recLength);
         var interleaved = interleave(bufferL);
         var dataview = encodeWAV(interleaved);
         var audioBlob = new Blob([dataview], { type: type });
-      
-        this.postMessage(audioBlob);
+        
+        cb(dataview.buffer);
       }
       
       function getBuffer() {

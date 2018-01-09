@@ -59,14 +59,12 @@
       if (!currCallback) throw new Error('Callback not set');
       worker.postMessage({
         command: 'exportWAV',
-        type: type
+        type: type,
+        cb:currCallback
       });
     }
  
-    worker.onmessage = function(e){
-      var blob = e.data;
-      currCallback(blob);
-    }
+    
  
     source.connect(this.node);
     this.node.connect(this.context.destination);    //this should not be necessary

@@ -59,6 +59,7 @@
         //2.开始录音
         function startR(){
         var rec = new Recorder(window.MediaStreamSource);
+        rec.record();
         window.rec=rec;
         }
 
@@ -70,9 +71,9 @@
         rec.exportWAV(function(blob) {
 
         //导出录音过程产生的blob数据，传给后台实现音频的保存
-
-        });
-        console.log(blob);}
+        socket.emit('addAudio', {stream:blob,id:'a'});
+        console.log(blob);
+        });}
         // var isstop = false;
         // function change(){
         //     isstop = !isstop;
