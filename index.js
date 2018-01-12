@@ -1,6 +1,6 @@
 const connect = require('connect');
 const servestatic = require('serve-static');
-const https = require('https');
+const https = require('http');
 const config = require('./config.json');
 const fs = require('fs');
 const url = require('url');
@@ -55,8 +55,8 @@ server.use('/dirList',function(req,res){
 server.use(servestatic('./',options));
 
 
-const options2 = {
-  key: fs.readFileSync('privatekey.pem'),
-  cert: fs.readFileSync('certificate.pem')
-};
-https.createServer(options2,server).listen(12345);
+// const options2 = {
+//   key: fs.readFileSync('privatekey.pem'),
+//   cert: fs.readFileSync('certificate.pem')
+// };
+https.createServer(server).listen(12345);

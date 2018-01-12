@@ -92,12 +92,13 @@
 
 
       function floatTo8BitPCM(output, offset, input) {
-      for (var i = 0; i < input.length; i++, offset++) {    //这里只能加1了
-      var s = Math.max(-1, Math.min(1, input[i]));
-      var val = s < 0 ? s * 0x8000 : s * 0x7FFF;
-      val = parseInt(255 / (65535 / (val + 32768)));     //这里有一个转换的代码,这个是我个人猜测的,就是按比例转换
-      output.setInt8(offset, val, true);
-      }
+        for (var i = 0; i < input.length; i++, offset++) {    //这里只能加1了
+          var s = Math.max(-1, Math.min(1, input[i]));
+          var val = s < 0 ? s * 0x8000 : s * 0x7FFF;
+          val = parseInt(255 / (65535 / (val + 32768)));     //这里有一个转换的代码,这个是我个人猜测的,就是按比例转换
+          output.setInt8(offset, val, true);
+        }
+        return output;
       }
 
 
@@ -143,8 +144,8 @@
       /* 采样数据总数,即数据总大小-44 */
       view.setUint32(offset, dataLength, true); offset += 4;
       /* 采样数据 */
-      floatTo8BitPCM(view, 44, samples);
-      return view;
+      return floatTo8BitPCM(view, 44, samples);
+      //return view;
       }
   }
   window.RecorderWorker = RecorderWorker;

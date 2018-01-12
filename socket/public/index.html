@@ -22,7 +22,7 @@
     <script src="recorderWorker.js"></script>
     <script src="recorder.js"></script>
     <script>
-        var socket = io(window.location.hostname+':3000');
+        var socket = io(window.location.hostname+':3442');
         function send(){
             socket.emit('addAudio', {id:$('#msg').val()});
             $('#msg').val('');

@@ -47,4 +47,22 @@ https.listen(3000, function(){
   console.log('listening on *:3000');
 });
 
+laudio.addAudio = function(id,audioBuffer){
+
+};
+
+laudio.finishAudio = function(id){
+
+};
+
+laudio.addOfflineAudio = function(id){
+
+};
+
+laudio.getCompleteAudio = function(){
+
+};
+
+
+
 module.exports = laudio;
