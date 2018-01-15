@@ -22,9 +22,9 @@
         var socket = io(window.location.hostname+':3442');
 
         var la = laudio;
-        socket.emit('audio.request',{id:''});
-        socket.on('audio.data',()=>{
-            la.audioCtx.decodeAudioData(msg, function(buffer) {
+        socket.emit('audio.request',{id:'1gmv2yotgXHqBiyvAAAD'});
+        socket.on('audio.data',(data)=>{
+            la.audioCtx.decodeAudioData(data.buffer, function(buffer) {
                 dogBarkingBuffer = buffer;
                 la.addAudio(dogBarkingBuffer);
                 console.log(la.length);
