@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SocketIO test</title>
+</head>
+<body>
+    <input type="text" name="msg" id="msg">
+    <input type="submit" value="send" onclick="send()">
+    <input type="submit" value="stop" onclick="change()">
+    <input type="submit" value="startR" onclick="startR()">
+    <input type="submit" value="stopR" onclick="stopR()">
+    <audio id="audio" controls></audio>
+    <div class="record">
+        <ul id="records"></ul>
+    </div>
+    <script src="socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="laudio.js"></script>
+    <script src="recorderWorker.js"></script>
+    <script src="recorder.js"></script>
+    <script>
+        var socket = io(window.location.hostname+':3442');
+        function send(){
+            socket.emit('addAudio', {id:$('#msg').val()});
+            $('#msg').val('');
+            return false;
+        };
+        socket.on('pcm',(buffer)=>{
+            socket.emit('audio.add',{buffer:buffer,index:0,recorder:'wlp'});
+            
+        });
+    </script>
+</body>
+</html>

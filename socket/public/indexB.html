@@ -22,6 +22,14 @@
         var socket = io(window.location.hostname+':3442');
 
         var la = laudio;
+        socket.emit('audio.request',{id:''});
+        socket.on('audio.data',()=>{
+            la.audioCtx.decodeAudioData(msg, function(buffer) {
+                dogBarkingBuffer = buffer;
+                la.addAudio(dogBarkingBuffer);
+                console.log(la.length);
+            }, ()=>console.log('error error'));
+        });
         socket.on('sendAudio',function(msg){
             // var frameCount = msg.byteLength;
 
