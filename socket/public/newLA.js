@@ -2,7 +2,7 @@
  * Copyright (c) 2016-2017, BeiJing MingZhiYuYin Technology Inc. All rights reserved.
  */
 
- (function(window){
+(function(window){
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
   
   function Raix(socket,audioId){
@@ -53,7 +53,6 @@
         }else{
           _buffers[index-1] = decodedBuffer;
         }
-        console.log('add one');
         self.length++;
       },(e)=>{
         console.log(e.name+':'+e.message);
@@ -80,8 +79,8 @@
             next.playbackRate.value = source.playbackRate.value;
             next.start(0);
         }else{
-            console.log('播放结束');
             self.isFinish = true;
+            self.emit('finish');
         }
       
       };
@@ -92,6 +91,7 @@
     self.play = function(){
       if(self.getNextSource()){
         self.getNextSource().start(0);
+        self.emit('start');
         self.hasplay = true;
       }else{
         setTimeout(function(){
@@ -136,7 +136,8 @@
         if(self.events[eventName])
           self.events[eventName].push(callback);
         else 
-          self.events[eventName] = [].push(callback);
+          self.events[eventName] = [];
+          self.events[eventName].push(callback);
       }
     };
     
@@ -159,11 +160,15 @@
       _playing = -1;
       _playingSource = {};
       _hasplay = false;
-      socket.emit('audio.request',audioId);
+      socket.emit('audio.request',{id:audioId});
       socket.on('audio.data'+audioId,function(data){
-        if(data.code == 200)
+        if(data.code == 200){
           self.addAudio(data.buffer,data.index);
-        else
+          if(!data.index)
+            self.emit('ready',data.index);
+          if(data.isFinish)
+            self.emit('loaded');
+        }else
           console.log('获取buffer失败');
       });
       return self;
@@ -177,15 +182,20 @@
     self.load = function(socket,audioId){
       socket.emit('audio.request',{id:audioId});
       socket.on('audio.data'+audioId,function(data){
-        if(data.code == 200)
+        if(data.code == 200){
           self.addAudio(data.buffer,data.index);
-        else
+          if(!data.index)
+            self.emit('ready',data.index);
+          if(data.isFinish)
+            self.emit('loaded');
+        }else
           console.log('获取buffer失败');
       });
       return self;
     }
 
     return self.load(socket,audioId);
-  };
+  }
+
   window.Raix = Raix;
  })(window);

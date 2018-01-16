@@ -27,6 +27,14 @@
         var la = {};
         function send(){
             la = new Raix(socket,$('#msg').val());
+            la.on('finish',()=>{console.log('播放结束')});
+            la.on('ready',()=>{la.play()});
+            la.on('start',()=>{
+                console.log('开始播放');
+            });
+            la.on('loaded',()=>{
+                console.log('加载结束');
+            })
         }
         
         function finish(){
