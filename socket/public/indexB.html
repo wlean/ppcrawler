@@ -12,24 +12,26 @@
     </div>
     <input type="text" name="msg" id="msg">
     <input type="submit" value="send" onclick="send()">
+    <input type="submit" value="finish" onclick="finish()">
     <input type="button" value="play" onclick="la.play()">
     <input type="button" value="replay" onclick="la.replay()">
     <audio id="audio" controls></audio>
     <script src="socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script src="laudio.js"></script>
+    <script src="newLA.js"></script>
     <script>
-        var socket = io(window.location.hostname+':3442');
+        var socket = io(window.location.hostname+':3442/player');
 
-        var la = laudio;
-        socket.emit('audio.request',{id:'1gmv2yotgXHqBiyvAAAD'});
-        socket.on('audio.data',(data)=>{
-            la.audioCtx.decodeAudioData(data.buffer, function(buffer) {
-                dogBarkingBuffer = buffer;
-                la.addAudio(dogBarkingBuffer);
-                console.log(la.length);
-            }, ()=>console.log('error error'));
-        });
+        //var la = laudio;
+        var la = {};
+        function send(){
+            la = new Raix(socket,$('#msg').val());
+        }
+        
+        function finish(){
+            socket.emit('audio.f',{id:$('#msg').val(),markresult:'嘚玲123456789101112131415'})
+        }
         socket.on('sendAudio',function(msg){
             // var frameCount = msg.byteLength;
 

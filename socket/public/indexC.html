@@ -8,9 +8,10 @@
 </head>
 <body>
     <input type="text" name="msg" id="msg">
-    <input type="submit" value="send" onclick="send()">
-    <input type="submit" value="stop" onclick="change()">
-    <input type="submit" value="startR" onclick="startR()">
+    <input type="submit" value="feedback" onclick="feedback()">
+    <input type="submit" value="startUpload" onclick="startUpload()">
+    <input type="submit" value="finish" onclick="finish()">
+    <input type="submit" value="sendRcgnt" onclick="sendRcgnt()">
     <input type="submit" value="stopR" onclick="stopR()">
     <audio id="audio" controls></audio>
     <div class="record">
@@ -22,16 +23,41 @@
     <script src="recorderWorker.js"></script>
     <script src="recorder.js"></script>
     <script>
-        var socket = io(window.location.hostname+':3442');
+        var socket = io(window.location.hostname+':3442/recorder');
         function send(){
             socket.emit('addAudio', {id:$('#msg').val()});
             $('#msg').val('');
             return false;
         };
-        socket.on('pcm',(buffer)=>{
-            socket.emit('audio.add',{buffer:buffer,index:0,recorder:'wlp'});
-            
+        let id = '';    
+        function startUpload(){
+            socket.emit('audio.exmple.pcm.request');
+            socket.on('audio.exmple.pcm.data',(buffer)=>{
+                socket.emit('audio.add',{buffer:buffer,recorder:'wlp'});
+            });
+        };
+        socket.on('audio.id',(data)=>{
+            if(id != data.id){
+                id = data.id;
+                socket.emit('audio.recognition',data)
+            }
+            console.log('id update',id);
         });
+        socket.on('audio.finish',(data)=>{
+            console.log('收到识别结果',data);
+        });
+        function finish(){
+            socket.emit('audio.finish',{id:id});
+        };
+
+        function sendRcgnt(){
+            socket.emit('audio.recognition',{id:id});
+        };
+
+        function feedback(){
+            let data = $('#msg').val('');
+            socket.emit('audio.feedback',{id:id,data:data})
+        };
     </script>
 </body>
 </html>
