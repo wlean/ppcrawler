@@ -22,7 +22,7 @@
     <script src="recorderWorker.js"></script>
     <script src="recorder.js"></script>
     <script>
-        var socket = io(window.location.hostname+':3442');
+        var socket = io(window.location.hostname+':3442/app');
         function send(){
             socket.emit('addAudio', {id:$('#msg').val()});
             $('#msg').val('');
@@ -71,7 +71,11 @@
         rec.exportWAV(function(blob) {
 
         //导出录音过程产生的blob数据，传给后台实现音频的保存
-        socket.emit('addAudio', {stream:blob,id:'a'});
+        socket.emit('audio.upload', {buffer:blob});
+        socket.on('audio.updateId', (data)=>{
+
+            socket.emit('audio.recognition',{id:data.id});
+        });
         console.log(blob);
         });}
         // var isstop = false;

@@ -40,10 +40,14 @@
       function exportWAV(type,cb){
         var bufferL = mergeBuffers(recBuffersL, recLength);
         var interleaved = interleave(bufferL);
-        var dataview = encodeWAV(interleaved);
-        var audioBlob = new Blob([dataview], { type: type });
+        // var dataview = encodeWAV(interleaved);
+        var dataLength = interleaved.length;
+        var buffer = new ArrayBuffer(44 + dataLength);
+        var view = new DataView(buffer);
+        floatTo8BitPCM(view,0,interleaved.buffer);
+        // var audioBlob = new Blob([dataview], { type: type });
         
-        cb(dataview.buffer);
+        cb(view.buffer);
       }
       
       function getBuffer() {
@@ -70,7 +74,7 @@
       
       function interleave(inputL){
       //修改采样率时 , 要做如下修改
-      var compression = 44100 / 11025;    //计算压缩率
+      var compression = 44100 / 8000;    //计算压缩率
       var length = inputL.length / compression;
       var result = new Float32Array(length);
       var index = 0,
@@ -113,7 +117,7 @@
       var dataLength = samples.length;
       var buffer = new ArrayBuffer(44 + dataLength);
       var view = new DataView(buffer);
-      var sampleRateTmp = 11205 ;//sampleRate;//写入新的采样率
+      var sampleRateTmp = 8000 ;//sampleRate;//写入新的采样率
       var sampleBits = 8;
       var channelCount = 1;
       var offset = 0;
@@ -144,8 +148,8 @@
       /* 采样数据总数,即数据总大小-44 */
       view.setUint32(offset, dataLength, true); offset += 4;
       /* 采样数据 */
-      return floatTo8BitPCM(view, 44, samples);
-      //return view;
+      floatTo8BitPCM(view, 44, samples);
+      return view;
       }
   }
   window.RecorderWorker = RecorderWorker;

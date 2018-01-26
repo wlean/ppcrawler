@@ -9,7 +9,7 @@
     let self = this;
     let _audioCtx = new AudioContext();
     /**
-     * @type {AudioBufferSourceNode}
+     * @type {[AudioBufferSourceNode]}
      */
     let _buffers = [];
 
@@ -51,9 +51,8 @@
         if(!index){
           _buffers.push(decodedBuffer);
         }else{
-          _buffers[index-1] = decodedBuffer;
+          _buffers[index] = decodedBuffer;
         }
-        self.length++;
       },(e)=>{
         console.log(e.name+':'+e.message);
       });
@@ -61,6 +60,7 @@
 
     /**
      * get the AudioBufferSourceNode that will play
+     * @returns {AudioBufferSourceNode}
      */
     self.getNextSource = function(){
       let source = _audioCtx.createBufferSource();
@@ -75,14 +75,18 @@
         console.log('end one');
         _playing++;
         let next = self.getNextSource();
-        if(next){
-            next.playbackRate.value = source.playbackRate.value;
-            next.start(0);
-        }else{
-            self.isFinish = true;
-            self.emit('finish');
+        if(!next && _playing>=_buffers.length){
+          self.isFinish = true;
+          self.emit('finish');
+          return ;
         }
-      
+        if(!next){
+          _playing++;
+          next = self.getNextSource();
+        }
+        if((_buffers.length-_playing)>5)
+          next.playbackRate.value = source.playbackRate.value;
+        next.start(0);
       };
       _playingSource = source;
       return source;
@@ -116,12 +120,12 @@
       _audioCtx.resume();
     };
 
-    self.forward = function(){
-
+    self.forward = function(duration){
+      _playing += duration; 
     };
 
-    self.rewind = function(){
-
+    self.rewind = function(duration){
+      _playing -= duration;
     };
 
     self.changeSpeed = function(speed){
@@ -160,18 +164,7 @@
       _playing = -1;
       _playingSource = {};
       _hasplay = false;
-      socket.emit('audio.request',{id:audioId});
-      socket.on('audio.data'+audioId,function(data){
-        if(data.code == 200){
-          self.addAudio(data.buffer,data.index);
-          if(!data.index)
-            self.emit('ready',data.index);
-          if(data.isFinish)
-            self.emit('loaded');
-        }else
-          console.log('获取buffer失败');
-      });
-      return self;
+      return self.load(socket,audioId);
     }
     
     /**
@@ -194,6 +187,13 @@
       return self;
     }
 
+    function getFirst(array){
+      let i;
+      for(i in array){
+        break;
+      }
+      return i;
+    }
     return self.load(socket,audioId);
   }
 

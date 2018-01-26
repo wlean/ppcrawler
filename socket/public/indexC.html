@@ -13,6 +13,7 @@
     <input type="submit" value="finish" onclick="finish()">
     <input type="submit" value="sendRcgnt" onclick="sendRcgnt()">
     <input type="submit" value="stopR" onclick="stopR()">
+    <input type="submit" value="uploadBuffer" onclick="uploadBuffer()">
     <audio id="audio" controls></audio>
     <div class="record">
         <ul id="records"></ul>
@@ -23,10 +24,23 @@
     <script src="recorderWorker.js"></script>
     <script src="recorder.js"></script>
     <script>
-        var socket = io(window.location.hostname+':3442/recorder');
+        var socket = io(window.location.hostname+':3442/app');
+        // const appConfig = {
+        // "expire": 30, 
+        // "option": { 
+        //     "path": "/vd.maoc3.com", 
+        //     "secure": true, 
+        //     "extraHeaders": {
+        //     }, 
+        //     "rejectUnauthorized": false,
+        //     "transports": ['websocket']
+        // }, 
+        // "autoOpen": true, 
+        // "resource": 100
+        // }
+        // var socket1 = io('https://139.198.6.168:10444/app',appConfig.option);
         function send(){
             socket.emit('addAudio', {id:$('#msg').val()});
-            $('#msg').val('');
             return false;
         };
         let id = '';    
@@ -47,17 +61,29 @@
             console.log('收到识别结果',data);
         });
         function finish(){
-            socket.emit('audio.finish',{id:id});
+            socket.emit('audio.finish',{id:$('#msg').val()});
         };
 
         function sendRcgnt(){
-            socket.emit('audio.recognition',{id:id});
+            socket.emit('audio.recognition',{id:$('#msg').val()});
         };
 
         function feedback(){
-            let data = $('#msg').val('');
-            socket.emit('audio.feedback',{id:id,data:data})
+            socket.emit('audio.feedback',{id:$('#msg').val(),data:{'123123':'：AD发生的'}})
         };
+
+        socket.on('audio.respond',(data)=>{
+            $('#records').append('<li>'+JSON.stringify(data)+'</li>');
+            finish();
+        });
+        let xxbuf = new ArrayBuffer(100);
+        function uploadBuffer(){
+            socket.emit('audio.exmple.pcm.request');
+            socket.on('audio.exmple.pcm.data',(data)=>{
+                $('#msg').val(data.id);
+                socket.emit('audio.upload',data);
+            })
+        }
     </script>
 </body>
 </html>

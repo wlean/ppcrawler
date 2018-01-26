@@ -15,13 +15,17 @@
     <input type="submit" value="finish" onclick="finish()">
     <input type="button" value="play" onclick="la.play()">
     <input type="button" value="replay" onclick="la.replay()">
+    <input type="button" value="加速" onclick="changeSpeed(0.25)">
+    <input type="button" value="减速" onclick="changeSpeed(-0.25)">
+    <input type="button" value="快进" onclick="la.forward(20)">
+    <input type="button" value="快退" onclick="la.rewind(20)">
     <audio id="audio" controls></audio>
     <script src="socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script src="laudio.js"></script>
     <script src="newLA.js"></script>
     <script>
-        var socket = io(window.location.hostname+':3442/player');
+        var socket = io(window.location.hostname+':3442/mt');
 
         //var la = laudio;
         var la = {};
@@ -39,6 +43,12 @@
         
         function finish(){
             socket.emit('audio.f',{id:$('#msg').val(),markresult:'嘚玲123456789101112131415'})
+        }
+
+        let speed = 1;
+        function changeSpeed(change){
+            speed = speed + change;
+            la.changeSpeed(speed);
         }
         socket.on('sendAudio',function(msg){
             // var frameCount = msg.byteLength;
